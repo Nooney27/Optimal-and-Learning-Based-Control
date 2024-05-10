@@ -1,0 +1,8 @@
+README.md
+setup.py
+cvxpy_examples/__init__.py
+cvxpy_examples.egg-info/PKG-INFO
+cvxpy_examples.egg-info/SOURCES.txt
+cvxpy_examples.egg-info/dependency_links.txt
+cvxpy_examples.egg-info/requires.txt
+cvxpy_examples.egg-info/top_level.txt

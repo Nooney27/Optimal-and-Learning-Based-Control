@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: cvxpy_examples
+Version: 0.0.1
+Summary: CVXPY examples
+Home-page: https://github.com/danielpmorton/cvxpy_examples
+Author: Daniel Morton
+Author-email: danielpmorton@gmail.com
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: tqdm
+Requires-Dist: scipy
+Requires-Dist: cvxpy
+Requires-Dist: clarabel
+Requires-Dist: ipython
+Provides-Extra: dev
+Requires-Dist: pylint; extra == "dev"
+Requires-Dist: black; extra == "dev"

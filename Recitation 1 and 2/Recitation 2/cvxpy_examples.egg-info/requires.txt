@@ -1,0 +1,11 @@
+numpy
+matplotlib
+tqdm
+scipy
+cvxpy
+clarabel
+ipython
+
+[dev]
+pylint
+black
