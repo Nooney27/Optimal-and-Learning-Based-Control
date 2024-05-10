@@ -1,0 +1,62 @@
+import numpy as np
+import cvxpy as cvx
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Parameters
+T = 20  # time horizon
+dt = 0.1  # time step
+
+# Cost matrices
+Q = np.eye(6)  # State cost
+R = np.eye(3)  # Control cost
+
+# Initial and goal states
+x0 = np.array([0, 0, 0, 0, 0, 0])  # [x, y, z, vx, vy, vz]
+xg = np.array([10, 10, 10, 0, 0, 0])  # [x, y, z, vx, vy, vz]
+
+# Variables
+X = {t: cvx.Variable(6) for t in range(T)}
+U = {t: cvx.Variable(3) for t in range(T-1)}
+
+# Objective and constraints
+cost_terms = []
+constraints = []
+
+for t in range(T-1):
+    cost_terms.append(cvx.quad_form(X[t] - xg, Q))  # State deviation cost
+    cost_terms.append(cvx.quad_form(U[t], R))  # Control effort cost
+    # Dynamics constraints
+    constraints.append(X[t+1][0] == X[t][0] + X[t][3] * dt + 0.5 * U[t][0] * dt**2)  # x position
+    constraints.append(X[t+1][1] == X[t][1] + X[t][4] * dt + 0.5 * U[t][1] * dt**2)  # y position
+    constraints.append(X[t+1][2] == X[t][2] + X[t][5] * dt + 0.5 * U[t][2] * dt**2)  # z position
+    constraints.append(X[t+1][3] == X[t][3] + U[t][0] * dt)  # x velocity
+    constraints.append(X[t+1][4] == X[t][4] + U[t][1] * dt)  # y velocity
+    constraints.append(X[t+1][5] == X[t][5] + U[t][2] * dt)  # z velocity
+
+constraints.append(X[0] == x0)  # Initial state constraint
+
+# Solve the problem
+objective = cvx.Minimize(sum(cost_terms))
+prob = cvx.Problem(objective, constraints)
+prob.solve()
+
+# Extract the optimal trajectory
+x_opt = np.array([X[t].value for t in range(T)])
+u_opt = np.array([U[t].value for t in range(T-1)])
+
+# Plot the trajectory
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(x_opt[:, 0], x_opt[:, 1], x_opt[:, 2], label='Optimal Trajectory')
+ax.scatter(x0[0], x0[1], x0[2], color='red', label='Start')
+ax.scatter(xg[0], xg[1], xg[2], color='green', label='Goal')
+ax.quiver(x_opt[:, 0], x_opt[:, 1], x_opt[:, 2], 
+          x_opt[:, 3], x_opt[:, 4], x_opt[:, 5], 
+          length=0.1, normalize=True, alpha=0.5)
+ax.set_xlabel('X Position')
+ax.set_ylabel('Y Position')
+ax.set_zlabel('Z Position')
+ax.set_title('Optimal Trajectory for Drone Model')
+ax.legend()
+plt.show()
